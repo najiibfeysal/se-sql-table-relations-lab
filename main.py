@@ -134,7 +134,10 @@ SELECT DISTINCT
         HAVING COUNT(DISTINCT ord2.customerNumber) < 20
     )
     ORDER BY
-    CASE WHEN e.firstName = 'Loui' THEN 0 ELSE 1 END,
+    CASE WHEN e.firstName = 'Loui' 
+        THEN 0 
+        ELSE 1 
+        END,
         e.employeeNumber;
 """, conn)
 
