@@ -34,7 +34,7 @@ SELECT officeCode, city
 df_employee = pd.read_sql("""
 SELECT firstName, lastName, city, State
     FROM employees
-    JOIN offices
+    LEFT JOIN offices
         USING(officeCode)
     ORDER BY firstName ASC, lastName ASC;
 """, conn)
@@ -47,7 +47,7 @@ SELECT contactFirstName, contactLastName, phone, salesRepEmployeeNumber
     LEFT JOIN orders
         USING(customerNumber)
     WHERE orderNumber IS NULL
-    ORDER BY contactFirstName ASC;
+    ORDER BY contactLastName ASC;
 """, conn)
 
 # STEP 5
@@ -86,7 +86,7 @@ SELECT productName, COUNT(*) AS numorders, SUM(quantityOrdered) AS totalunits
 # STEP 8
 # Replace None with your code
 df_total_customers = pd.read_sql("""
-SELECT productName, COUNT(DISTINCT customerNumber) AS numpurchasers
+SELECT productName, productCode, COUNT(DISTINCT customerNumber) AS numpurchasers
     FROM products
     JOIN orderdetails
         USING(productCode)
@@ -111,7 +111,8 @@ SELECT COUNT(customerNumber) AS n_customers, o.officeCode, o.city
 # STEP 10
 # Replace None with your code
 df_under_20 = pd.read_sql("""
-SELECT employeeNumber, firstName, lastName, o.city, o.officeCode
+SELECT DISTINCT
+    employeeNumber, firstName, lastName, o.city, o.officeCode
     FROM employees AS e
     JOIN offices AS o
         USING(officeCode)
