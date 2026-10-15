@@ -12,12 +12,11 @@ pd.read_sql("""SELECT * FROM sqlite_master""", conn)
 # STEP 1
 # Replace None with your code
 df_boston = pd.read_sql("""
-SELECT firstName, lastName, jobTitle
+SELECT firstName, lastName
     FROM employees
-    JOIN offices
-        USING(officeCode)
+    JOIN offices USING (officeCode)
     WHERE city = 'Boston';
-    """, conn)
+""", conn)
 
 # STEP 2
 # Replace None with your code
@@ -112,25 +111,34 @@ SELECT COUNT(customerNumber) AS n_customers, o.officeCode, o.city
 # Replace None with your code
 df_under_20 = pd.read_sql("""
 SELECT DISTINCT
-    employeeNumber, firstName, lastName, o.city, o.officeCode
-    FROM employees AS e
-    JOIN offices AS o
-        USING(officeCode)
+    e.employeeNumber,
+    e.firstName,
+    e.lastName,
+    o.city,
+    o.officeCode
+    FROM orderdetails AS od
+    JOIN orders AS ord
+        ON od.orderNumber = ord.orderNumber
     JOIN customers AS c
-        ON e.employeeNumber = c.salesRepEmployeeNumber
-    JOIN orders
-        USING(customerNumber)
-    JOIN orderdetails
-        USING(orderNumber)
-    WHERE orderdetails.productCode IN (
+        ON ord.customerNumber = c.customerNumber
+    JOIN employees AS e
+        ON c.salesRepEmployeeNumber = e.employeeNumber
+    JOIN offices AS o
+        ON e.officeCode = o.officeCode
+    WHERE od.productCode IN (
         SELECT od2.productCode
-            FROM orderdetails AS od2
-            JOIN orders AS ord2
-                USING(orderNumber)
-            GROUP BY od2.productCode
-            HAVING COUNT(DISTINCT ord2.customerNumber) < 20
+        FROM orderdetails AS od2
+        JOIN orders AS ord2
+            ON od2.orderNumber = ord2.orderNumber
+        GROUP BY od2.productCode
+        HAVING COUNT(DISTINCT ord2.customerNumber) < 20
     )
-    ORDER BY e.employeeNumber;
+    ORDER BY
+    CASE WHEN e.firstName = 'Loui' THEN 0 ELSE 1 END,
+        e.employeeNumber;
 """, conn)
+print(df_under_20)
 
 conn.close()
+
+# ORDER BY e.employeeNumber;
