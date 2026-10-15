@@ -137,8 +137,5 @@ SELECT DISTINCT
     CASE WHEN e.firstName = 'Loui' THEN 0 ELSE 1 END,
         e.employeeNumber;
 """, conn)
-print(df_under_20)
 
 conn.close()
-
-# ORDER BY e.employeeNumber;
